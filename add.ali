@@ -1,0 +1,136 @@
+V "GNAT Lib v3.13 "
+A -g
+P LC TF
+R nnvvrnvvnnnnvvvvnvvvnnnnvnnnnnvnnnnnnnnnnnn
+
+U add%b			add.adb			075D8B47 PK IL
+W ada%s			ada.ads			ada.ali
+W ada.exceptions%s	a-except.adb		a-except.ali
+W ada.real_time%s	a-reatim.adb		a-reatim.ali
+W ada.real_time.delays%s  a-retide.adb		a-retide.ali
+W devices%s		devices.adb		devices.ali  ED
+W kernel%s		kernel.ads		kernel.ali
+W kernel.serial_output%s  kernel-serial_output.adb  kernel-serial_output.ali  ED
+W system%s		system.ads		system.ali
+W system.img_real%s	s-imgrea.adb		s-imgrea.ali
+W system.parameters%s	s-parame.adb		s-parame.ali
+W system.secondary_stack%s  s-secsta.adb	s-secsta.ali
+W system.soft_links%s	s-soflin.adb		s-soflin.ali
+W system.string_ops%s	s-strops.adb		s-strops.ali
+W system.task_info%s	s-tasinf.adb		s-tasinf.ali
+W system.tasking%s	s-taskin.adb		s-taskin.ali
+W system.tasking.protected_objects%s  s-taprob.adb  s-taprob.ali
+W system.tasking.restricted.stages%s  s-tarest.adb  s-tarest.ali
+W tools%s		tools.adb		tools.ali  ED
+
+U add%s			add.ads			204085E0 NE PK IL
+
+D ada.ads		20000718095948 2359F9ED
+D a-except.ads		20000718095948 287FCF69
+D a-finali.ads		20000718095948 3F32DEEF
+D a-filico.ads		20000718095948 1DECB9AC
+D a-reatim.ads		20000718095948 5DBAB303
+D a-retide.ads		20000718095948 7F3C479C
+D a-stream.ads		20000718095948 5F7C277B
+D a-tags.ads		20000718095948 45EF7E4E
+D add.ads		20191007063732 204085E0
+D add.adb		20201020155028 4C6AE514
+D devices.ads		20201005172558 76B11196
+D kernel.ads		20010312182047 56BBE4F1
+D kernel-cpu_primitives.ads  20010312182047 5746D7AD
+D kernel-interrupts.ads	20010312182047 72CD7AA3
+D kernel-parameters.ads	20010312182047 0D1B8F78
+D kernel-peripherals.ads  20010312182047 089544EF
+D kernel-serial_output.ads  20010312182047 16AD38F4
+D kernel-threads.ads	20010312182047 234DAE87
+D kernel-time.ads	20010312182047 7A57ECF4
+D system.ads		20010312182047 2AE5BAFE
+D s-exctab.ads		20000718095948 7A25F5F9
+D s-finimp.ads		20000718095949 1C201C0F
+D s-finroo.ads		20000718095949 166D4EDA
+D s-imgrea.ads		20000718095949 7AFCD204
+D s-osinte.ads		20010312182047 7BFC1094
+D s-parame.ads		20000718095949 25FE086A
+D s-secsta.ads		20000718095949 60A2A5CD
+D s-soflin.ads		20000718095949 006B24D7
+D s-stache.ads		20000718095949 42B57F2A
+D s-stalib.ads		20000718095949 438B3864
+D s-stoele.ads		20000718095949 131D4539
+D s-stratt.ads		20000718095949 1761725B
+D s-strops.ads		20000718095949 3DBA3DD5
+D s-tasinf.ads		20000718095949 0F7BBEC5
+D s-taspri.ads		20010312182047 3235B2AC
+D s-taprop.ads		20010312182047 36F12025
+D s-taskin.ads		20000718095949 09146F23
+D s-taprob.ads		20000718095949 1D5668B3
+D s-tasres.ads		20000718095949 62B4C0AB
+D s-tarest.ads		20000718095949 1D177686
+D s-unstyp.ads		20000718095949 78AFB91D
+D tools.ads		20191007063732 7C34CB2C
+D unchconv.ads		20000718095949 72DC4539
+X 1 ada.ads
+18U9*Ada 10|3r6 3r25
+X 5 a-reatim.ads
+43U13*Real_Time 10|3r10 3r29
+45O9*Time 10|69r13 76r15 77r13
+50O9*Time_Span 10|70r17
+57U13*Clock 10|84r16 105r16 161r23
+59U13*"+" 10|80r23 109r22 161r29
+62U13*"-" 10|106r86
+84U13*To_Duration 10|106r68
+85U13*To_Time_Span 10|70r30 161r31
+X 9 add.ads
+1U9*add 10|13b14
+2U13*Background 10|18b15
+X 10 add.adb
+29t10 Cabeza
+39W20 Sintomas 49r11 55b20
+39i29 valor_ini 45r26
+42U19 escribirCabeza 56b19 96r17 98r17
+42e34 nuevo_valor_bool 56b34 58r18
+45i9 dato
+46e9 datoC 58r9
+49w5 sint 96r12 98r12
+69O5 t_sig 80m5 108r19 109m7 109r16
+70O5 intervalo 80r25 109r24
+71a5 cabeza_act 86m29 87r36 91r12 92r11 93r12 94r12 102r21
+72a5 cabeza_ant 91r37 92r37 93r37 94r38 102m7
+73i5 sw_act 88m25 89r25 93r64 94r66 103r17
+74i5 sw_ant 93r79 94r82 103m7
+76O5 t_start 84m5 106r88
+77O5 t_end 105m7 106r80
+118U15 Prueba_Dispositivos 120b15 170r4
+121i9 Current_V
+122a9 Current_H
+123i9 Current_D
+124a9 Current_O
+125a9 Current_E
+126i9 Current_S
+130i14 I
+X 11 devices.ads
+5U9*devices 10|7r6 7r19
+36A10*EEG_Samples_Type 10|125r20
+47A10*Eyes_Samples_Type 10|124r20
+56N41*x 10|91r23 91r48 92r22 92r48
+56N43*y 10|93r23 93r48 94r23 94r49
+58A10*HeadPosition_Samples_Type 10|71r17 72r17 122r20
+61U15*Reading_HeadPosition 10|86r7
+68I10*Distance_Samples_Type 10|123r20
+76I10*Speed_Samples_Type 10|121r20
+84I10*Steering_Samples_Type 10|73r13 74r13 126r20
+86U15*Reading_Steering 10|88r7
+115U15*Display_Steering 10|89r7
+119U15*Display_HeadPosition_Sample 10|87r7
+X 12 kernel.ads
+36U9*Kernel 10|2r6 2r32
+X 17 kernel-serial_output.ads
+36U16*Serial_Output 10|2r13 2r39
+49U14*Put_Line 10|106r7
+X 20 system.ads
+46U9*System 10|4r6 4r18
+X 42 tools.ads
+6U9*tools 10|6r6 6r17
+8O5*Big_Bang 10|80r14
+13U15*Starting_Notice 10|82r5 128r10 169r4
+14U15*Finishing_Notice 10|107r7 164r10 171r4
+
