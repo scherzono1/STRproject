@@ -12,6 +12,10 @@ with Devices; use Devices;
 
 package body add is
 
+    DISTANCIA_SEGURA: constant Integer := 0;
+    DISTANCIA_INSEGURA: constant Integer := 1;
+    DISTANCIA_IMPRUDENTE: constant Integer := 2;
+    PELIGRO_COLISION: constant Integer := 3;
     ----------------------------------------------------------------------
     ------------- procedure exported 
     ----------------------------------------------------------------------
@@ -42,32 +46,23 @@ package body add is
     	pragma priority(4);
 
     	procedure escribirCabeza(nuevo_valor_bool: boolean);
-    
+      procedure escribir_dist_sintoma(nuevo_valor: integer); 
+
     private 
     	dato: integer := valor_ini;
     	datoC: boolean := false;
     end Sintomas;
-    
-    protected body Medidas is
-    	function leerVelocidad return Speed_Samples_Type is
-    	begin
-    		return velAct;
-    	end leerVelocidad;
-    	
-    	function leerDistancia return Distance_Samples_Type is
-    	begin
-    		return distAct;
-    	end leerDistancia;
-    	
-    	procedure escribir_dist_vel(dist: Distance_Samples_Type; vel: Speed_Samples_Type) is 
-    	begin 
-    	velAct := vel;
-    	distAct := dist;
-    	end escribir_dist_vel;
+   
+    protected type Medidas is
+    	pragma priority(13);
+    	procedure escribir_dist_vel(dist: Distance_Samples_Type; vel: Speed_Samples_Type);
+    private
+    	velAct: Speed_Samples_Type;
+    	distAct: Distance_Samples_Type;
     end Medidas;
 
     sint: Sintomas(0);
-    
+    medida: Medidas;
     ----------------------------------------------------------------------
     ------------- cuerpo de objeto protegido 
     ---------------------------------------------------------------------- 
@@ -77,8 +72,22 @@ package body add is
     	begin 
     	datoC := nuevo_valor_bool;
     	end escribirCabeza;
+
+      procedure escribir_dist_sintoma(nuevo_valor: integer) is 
+    	begin 
+    	dato := nuevo_valor;
+    	end escribir_dist_sintoma;
+
     end Sintomas;
     
+
+    protected body Medidas is
+    	procedure escribir_dist_vel(dist: Distance_Samples_Type; vel: Speed_Samples_Type) is 
+    	begin 
+         velAct := vel;
+         distAct := dist;
+    	end escribir_dist_vel;
+    end Medidas;
 
     -----------------------------------------------------------------------
     ------------- body of tasks 
@@ -148,12 +157,12 @@ package body add is
     	medida.escribir_dist_vel(dist_act, vel_act);
     	
     	if (Float(dist_act) < Float(((vel_act/10)**2)) )then
-    		sint.escribir(DISTANCIA_INSEGURA);
+    		sint.escribir_dist_sintoma(DISTANCIA_INSEGURA);
     	elsif (Float(dist_act) < Float(((vel_act/10)**2)/2) )then
-        	sint.escribir(DISTANCIA_IMPRUDENTE); 
+        	sint.escribir_dist_sintoma(DISTANCIA_IMPRUDENTE); 
         elsif(Float(dist_act) < Float(((vel_act/10)**2)/3) )then
-        	sint.escribir(PELIGRO_COLISION);
-        else  sint.escribir(DISTANCIA_SEGURA);
+        	sint.escribir_dist_sintoma(PELIGRO_COLISION);
+        else  sint.escribir_dist_sintoma(DISTANCIA_SEGURA);
         end if;
         Finishing_Notice("FIN TAREA DISTANCIA");
         delay until sig_instante;

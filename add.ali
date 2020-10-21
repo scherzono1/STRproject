@@ -3,7 +3,7 @@ A -g
 P LC TF
 R nnvvrnvvnnnnvvvvnvvvnnnnvnnnnnvnnnnnnnnnnnn
 
-U add%b			add.adb			075D8B47 PK IL
+U add%b			add.adb			3F734BCF PK IL
 W ada%s			ada.ads			ada.ali
 W ada.exceptions%s	a-except.adb		a-except.ali
 W ada.real_time%s	a-reatim.adb		a-reatim.ali
@@ -34,7 +34,7 @@ D a-retide.ads		20000718095948 7F3C479C
 D a-stream.ads		20000718095948 5F7C277B
 D a-tags.ads		20000718095948 45EF7E4E
 D add.ads		20191007063732 204085E0
-D add.adb		20201020155028 4C6AE514
+D add.adb		20201021163901 7444259C
 D devices.ads		20201005172558 76B11196
 D kernel.ads		20010312182047 56BBE4F1
 D kernel-cpu_primitives.ads  20010312182047 5746D7AD
@@ -72,65 +72,85 @@ X 1 ada.ads
 18U9*Ada 10|3r6 3r25
 X 5 a-reatim.ads
 43U13*Real_Time 10|3r10 3r29
-45O9*Time 10|69r13 76r15 77r13
-50O9*Time_Span 10|70r17
-57U13*Clock 10|84r16 105r16 161r23
-59U13*"+" 10|80r23 109r22 161r29
-62U13*"-" 10|106r86
-84U13*To_Duration 10|106r68
-85U13*To_Time_Span 10|70r30 161r31
+45O9*Time 10|98r13 105r15 106r13 147r20
+50O9*Time_Span 10|99r17 148r17
+57U13*Clock 10|113r16 134r16 221r23
+59U13*"+" 10|109r23 138r22 151r30 169r38 221r29
+62U13*"-" 10|135r86
+84U13*To_Duration 10|135r68
+85U13*To_Time_Span 10|99r30 148r30 221r31
 X 9 add.ads
 1U9*add 10|13b14
-2U13*Background 10|18b15
+2U13*Background 10|22b15
 X 10 add.adb
-29t10 Cabeza
-39W20 Sintomas 49r11 55b20
-39i29 valor_ini 45r26
-42U19 escribirCabeza 56b19 96r17 98r17
-42e34 nuevo_valor_bool 56b34 58r18
-45i9 dato
-46e9 datoC 58r9
-49w5 sint 96r12 98r12
-69O5 t_sig 80m5 108r19 109m7 109r16
-70O5 intervalo 80r25 109r24
-71a5 cabeza_act 86m29 87r36 91r12 92r11 93r12 94r12 102r21
-72a5 cabeza_ant 91r37 92r37 93r37 94r38 102m7
-73i5 sw_act 88m25 89r25 93r64 94r66 103r17
-74i5 sw_ant 93r79 94r82 103m7
-76O5 t_start 84m5 106r88
-77O5 t_end 105m7 106r80
-118U15 Prueba_Dispositivos 120b15 170r4
-121i9 Current_V
-122a9 Current_H
-123i9 Current_D
-124a9 Current_O
-125a9 Current_E
-126i9 Current_S
-130i14 I
+15i5 DISTANCIA_SEGURA 165r42
+16i5 DISTANCIA_INSEGURA 160r44
+17i5 DISTANCIA_IMPRUDENTE 162r44
+18i5 PELIGRO_COLISION 164r44
+30t10 Cabeza
+34t10 Distancia
+45W20 Sintomas 64r11 70b20
+45i29 valor_ini 52r26
+48U19 escribirCabeza 71b19 125r17 127r17
+48e34 nuevo_valor_bool 71b34 73r18
+49U17 escribir_dist_sintoma 76b17 160r22 162r22 164r22 165r20
+49i39 nuevo_valor 76b39 78r17
+52i9 dato 78r9
+53e9 datoC 73r9
+56W20 Medidas 65r13 84b20
+58U19 escribir_dist_vel 85b19 157r16
+58i37 dist 85b37 88r21
+58i66 vel 85b66 87r20
+60i9 velAct 87r10
+61i9 distAct 88r10
+64w5 sint 125r12 127r12 160r17 162r17 164r17 165r15
+65w5 medida 157r9
+98O5 t_sig 109m5 137r19 138m7 138r16
+99O5 intervalo 109r25 138r24
+100a5 cabeza_act 115m29 116r36 120r12 121r11 122r12 123r12 131r21
+101a5 cabeza_ant 120r37 121r37 122r37 123r38 131m7
+102i5 sw_act 117m25 118r25 122r64 123r66 132r17
+103i5 sw_ant 122r79 123r82 132m7
+105O5 t_start 113m5 135r88
+106O5 t_end 134m7 135r80
+145i5 dist_act 154m27 157r34 159r19 161r22 163r21
+146i5 vel_act 155m24 157r44 159r39 161r42 163r41
+147O5 sig_instante 151m5 168r21 169m9 169r25
+148O5 intervalo 151r32 169r40
+178U15 Prueba_Dispositivos 180b15 230r4
+181i9 Current_V
+182a9 Current_H
+183i9 Current_D
+184a9 Current_O
+185a9 Current_E
+186i9 Current_S
+190i14 I
 X 11 devices.ads
 5U9*devices 10|7r6 7r19
-36A10*EEG_Samples_Type 10|125r20
-47A10*Eyes_Samples_Type 10|124r20
-56N41*x 10|91r23 91r48 92r22 92r48
-56N43*y 10|93r23 93r48 94r23 94r49
-58A10*HeadPosition_Samples_Type 10|71r17 72r17 122r20
-61U15*Reading_HeadPosition 10|86r7
-68I10*Distance_Samples_Type 10|123r20
-76I10*Speed_Samples_Type 10|121r20
-84I10*Steering_Samples_Type 10|73r13 74r13 126r20
-86U15*Reading_Steering 10|88r7
-115U15*Display_Steering 10|89r7
-119U15*Display_HeadPosition_Sample 10|87r7
+36A10*EEG_Samples_Type 10|185r20
+47A10*Eyes_Samples_Type 10|184r20
+56N41*x 10|120r23 120r48 121r22 121r48
+56N43*y 10|122r23 122r48 123r23 123r49
+58A10*HeadPosition_Samples_Type 10|100r17 101r17 182r20
+61U15*Reading_HeadPosition 10|115r7
+68I10*Distance_Samples_Type 10|58r43 61r18 85r43 145r15 183r20
+70U15*Reading_Distance 10|154r9
+76I10*Speed_Samples_Type 10|58r71 60r17 85r71 146r14 181r20
+78U15*Reading_Speed 10|155r9
+84I10*Steering_Samples_Type 10|102r13 103r13 186r20
+86U15*Reading_Steering 10|117r7
+115U15*Display_Steering 10|118r7
+119U15*Display_HeadPosition_Sample 10|116r7
 X 12 kernel.ads
 36U9*Kernel 10|2r6 2r32
 X 17 kernel-serial_output.ads
 36U16*Serial_Output 10|2r13 2r39
-49U14*Put_Line 10|106r7
+49U14*Put_Line 10|135r7
 X 20 system.ads
 46U9*System 10|4r6 4r18
 X 42 tools.ads
 6U9*tools 10|6r6 6r17
-8O5*Big_Bang 10|80r14
-13U15*Starting_Notice 10|82r5 128r10 169r4
-14U15*Finishing_Notice 10|107r7 164r10 171r4
+8O5*Big_Bang 10|109r14 151r21
+13U15*Starting_Notice 10|111r5 153r9 188r10 229r4
+14U15*Finishing_Notice 10|136r7 167r9 224r10 231r4
 
