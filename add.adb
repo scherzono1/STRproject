@@ -34,6 +34,10 @@ package body add is
     task Distancia is
     pragma priority(2);
     end Distancia;
+
+    task Giros is
+    pragma priority(3);
+    end Giros;
     
     ---------------------------------------------------------
     -- Aqui se declaran las tareas que forman el STR
@@ -44,13 +48,13 @@ package body add is
     
     protected type Sintomas(valor_ini: integer) is 
     	pragma priority(4);
-
     	procedure escribirCabeza(nuevo_valor_bool: boolean);
       procedure escribir_dist_sintoma(nuevo_valor: integer); 
-
+      procedure escribir_vol_sintoma(nuevo_valor: boolean);
     private 
     	dato: integer := valor_ini;
     	datoC: boolean := false;
+      vol_sintoma: boolean := false;
     end Sintomas;
    
     protected type Medidas is
@@ -78,6 +82,11 @@ package body add is
     	dato := nuevo_valor;
     	end escribir_dist_sintoma;
 
+      procedure escribir_vol_sintoma(nuevo_valor: boolean) is
+      begin
+         vol_sintoma := nuevo_valor;
+      end escribir_vol_sintoma;
+
     end Sintomas;
     
 
@@ -93,7 +102,7 @@ package body add is
     ------------- body of tasks 
     -----------------------------------------------------------------------
 
-    task body Cabeza is
+   task body Cabeza is
     
     t_sig : Time;
     intervalo : Time_Span := To_Time_Span(0.4);
@@ -170,6 +179,33 @@ package body add is
     end loop;
     end Distancia;
 
+   task body Giros is
+    current_g: Steering_Samples_Type := 0;
+    old_g: Steering_Samples_Type := 0;
+    current_speed: Speed_Samples_Type := 0;
+    sig_instante : Time;
+    intervalo : Time_Span := To_Time_Span(0.35);
+   begin
+   sig_instante := Big_Bang + intervalo;
+      loop
+         Reading_Steering(current_g);
+         Reading_Speed(current_speed);
+
+         if (current_g >= old_g + 20) or (current_g <= old_g-20) then
+            if (current_speed > 40) then
+               sint.escribir_vol_sintoma(true);
+            else 
+               sint.escribir_vol_sintoma(false);
+            end if;
+         else
+            sint.escribir_vol_sintoma(false);
+         end if;
+
+         old_g := current_g;
+         delay until sig_instante;
+         sig_instante := sig_instante + intervalo;
+      end loop;
+   end Giros;
 
 
     ----------------------------------------------------------------------
