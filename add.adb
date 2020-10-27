@@ -39,6 +39,10 @@ package body add is
     pragma priority(3);
     end Giros;
 
+    task Riesgos is 
+    pragma priority(3);
+    end Riesgos;
+
     ---------------------------------------------------------
     -- Aqui se declaran las tareas que forman el STR
     ---------------------------------------------------------
@@ -51,6 +55,9 @@ package body add is
     	procedure escribir_cabeza_sint(nuevo_valor_bool: boolean);
       procedure escribir_dist_sintoma(nuevo_valor: integer); 
       procedure escribir_sint_vol(nuevo_valor: boolean);
+      function leer_cabeza_sin return boolean;
+      function leer_dist_sin return integer;
+      function leer_vol_sin return boolean;
     private 
     	sint_dist: integer := valor_ini;
     	sint_cabeza: boolean := false;
@@ -60,6 +67,8 @@ package body add is
     protected type Medidas is
     	pragma priority(13);
     	procedure escribir_dist_vel(dist: Distance_Samples_Type; vel: Speed_Samples_Type);
+      function leer_distancia return Distance_Samples_Type;
+      function leer_velocidad return Speed_Samples_Type;
     private
     	velocidad: Speed_Samples_Type;
     	distancia: Distance_Samples_Type;
@@ -72,6 +81,18 @@ package body add is
     ---------------------------------------------------------------------- 
      
     protected body Sintomas is
+    	function leer_cabeza_sin return boolean is
+    	begin
+    		return sint_cabeza;
+    	end leer_cabeza_sin;
+    	function leer_dist_sin return integer is
+    	begin
+    		return sint_dist;
+    	end leer_dist_sin;
+      function leer_vol_sin return boolean is
+    	begin
+    		return sint_vol;
+    	end leer_vol_sin;
     	procedure escribir_cabeza_sint(nuevo_valor_bool: boolean) is 
     	begin 
     	sint_cabeza := nuevo_valor_bool;
@@ -90,6 +111,14 @@ package body add is
 
 
     protected body Medidas is
+      function leer_distancia return Distance_Samples_Type is 
+    	begin 
+    	   return distancia;
+    	end leer_distancia;
+      function leer_velocidad return Speed_Samples_Type is 
+    	begin 
+    	   return velocidad;
+    	end leer_velocidad;
     	procedure escribir_dist_vel(dist: Distance_Samples_Type; vel: Speed_Samples_Type) is 
     	begin 
          velocidad := vel;
@@ -214,6 +243,45 @@ package body add is
       end loop;
    end Giros;
 
+
+   
+   task body Riesgos is
+    sig_instante : Time;
+    intervalo : Time_Span := To_Time_Span(0.15);
+    begin
+    sig_instante := Big_Bang + intervalo;
+      loop
+         Starting_Notice("COMIENZA TAREA RIESGOS");         
+         if (sint.leer_vol_sin) then
+            Beep(1);
+         end if;
+
+         if(sint.leer_cabeza_sin) then
+            Beep(2);
+            if(Integer(medida.leer_velocidad) >= 70)then
+               Beep(3); 
+            end if;
+         end if;
+         
+         if(sint.leer_dist_sin = DISTANCIA_INSEGURA)
+            then Light(ON); 
+         end if;
+
+         if(sint.leer_dist_sin = DISTANCIA_IMPRUDENTE) then
+            Beep(4);
+            Light(ON);
+         end if;
+         
+         if(sint.leer_dist_sin = PELIGRO_COLISION) AND (sint.leer_cabeza_sin) then
+            Beep(5);
+            Activate_Brake;
+         end if;
+         
+         Finishing_Notice("FIN TAREA RIESGOS");
+         delay until sig_instante;
+         sig_Instante := sig_instante + intervalo;
+      end loop;
+    end Riesgos;
 
     ----------------------------------------------------------------------
     ------------- procedure para probar los dispositivos 
