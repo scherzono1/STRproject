@@ -151,33 +151,41 @@ package body add is
 
    task body Distancia is 
     
-    dist_act: Distance_Samples_Type := 0;
-    vel_act: Speed_Samples_Type := 0;
-    sig_instante : Time;
-    intervalo : Time_Span := To_Time_Span(0.3);
+   dist_act: Distance_Samples_Type := 0;
+   vel_act: Speed_Samples_Type := 0;
+   cal_vel: Speed_Samples_Type := 0;
+   sig_instante: Time;
+   intervalo: Time_Span := To_Time_Span(0.3);
     
-    begin
+   begin
+
     sig_instante := Big_Bang + intervalo;
+
     loop
     	Starting_Notice("COMIENZA TAREA DISTANCIA");
-        Reading_Distance (dist_act);
+      Reading_Distance (dist_act);
     	Reading_Speed (vel_act);
     	
     	medida.escribir_dist_vel(dist_act, vel_act);
+
+      cal_vel := (vel_act/10)**2;
     	
-    	if (Float(dist_act) < Float(((vel_act/10)**2)) )then
+    	if (Float(dist_act) < Float(cal_vel) )then
     		sint.escribir_dist_sintoma(DISTANCIA_INSEGURA);
-    	elsif (Float(dist_act) < Float(((vel_act/10)**2)/2) )then
+    	elsif (Float(dist_act) < Float(cal_vel/2) )then
         	sint.escribir_dist_sintoma(DISTANCIA_IMPRUDENTE); 
-        elsif(Float(dist_act) < Float(((vel_act/10)**2)/3) )then
+      elsif(Float(dist_act) < Float(cal_vel/3) )then
         	sint.escribir_dist_sintoma(PELIGRO_COLISION);
-        else  sint.escribir_dist_sintoma(DISTANCIA_SEGURA);
-        end if;
-        Finishing_Notice("FIN TAREA DISTANCIA");
-        delay until sig_instante;
-        sig_instante := sig_instante + intervalo;
+      else  sint.escribir_dist_sintoma(DISTANCIA_SEGURA);
+      end if;
+
+      Finishing_Notice("FIN TAREA DISTANCIA");
+      delay until sig_instante;
+      sig_instante := sig_instante + intervalo;
+      
     end loop;
-    end Distancia;
+
+   end Distancia;
 
    task body Giros is
     current_g: Steering_Samples_Type := 0;
