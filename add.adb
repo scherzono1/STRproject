@@ -38,7 +38,7 @@ package body add is
     task Giros is
     pragma priority(3);
     end Giros;
-    
+
     ---------------------------------------------------------
     -- Aqui se declaran las tareas que forman el STR
     ---------------------------------------------------------
@@ -48,21 +48,21 @@ package body add is
     
     protected type Sintomas(valor_ini: integer) is 
     	pragma priority(4);
-    	procedure escribirCabeza(nuevo_valor_bool: boolean);
+    	procedure escribir_cabeza_sint(nuevo_valor_bool: boolean);
       procedure escribir_dist_sintoma(nuevo_valor: integer); 
-      procedure escribir_vol_sintoma(nuevo_valor: boolean);
+      procedure escribir_sint_vol(nuevo_valor: boolean);
     private 
-    	dato: integer := valor_ini;
-    	datoC: boolean := false;
-      vol_sintoma: boolean := false;
+    	sint_dist: integer := valor_ini;
+    	sint_cabeza: boolean := false;
+      sint_vol: boolean := false;
     end Sintomas;
    
     protected type Medidas is
     	pragma priority(13);
     	procedure escribir_dist_vel(dist: Distance_Samples_Type; vel: Speed_Samples_Type);
     private
-    	velAct: Speed_Samples_Type;
-    	distAct: Distance_Samples_Type;
+    	velocidad: Speed_Samples_Type;
+    	distancia: Distance_Samples_Type;
     end Medidas;
 
     sint: Sintomas(0);
@@ -72,29 +72,28 @@ package body add is
     ---------------------------------------------------------------------- 
      
     protected body Sintomas is
-    	procedure escribirCabeza(nuevo_valor_bool: boolean) is 
+    	procedure escribir_cabeza_sint(nuevo_valor_bool: boolean) is 
     	begin 
-    	datoC := nuevo_valor_bool;
-    	end escribirCabeza;
+    	sint_cabeza := nuevo_valor_bool;
+    	end escribir_cabeza_sint;
 
       procedure escribir_dist_sintoma(nuevo_valor: integer) is 
     	begin 
-    	dato := nuevo_valor;
+    	sint_dist := nuevo_valor;
     	end escribir_dist_sintoma;
 
-      procedure escribir_vol_sintoma(nuevo_valor: boolean) is
+      procedure escribir_sint_vol(nuevo_valor: boolean) is
       begin
-         vol_sintoma := nuevo_valor;
-      end escribir_vol_sintoma;
-
+         sint_vol := nuevo_valor;
+      end escribir_sint_vol;
     end Sintomas;
-    
+
 
     protected body Medidas is
     	procedure escribir_dist_vel(dist: Distance_Samples_Type; vel: Speed_Samples_Type) is 
     	begin 
-         velAct := vel;
-         distAct := dist;
+         velocidad := vel;
+         distancia := dist;
     	end escribir_dist_vel;
     end Medidas;
 
@@ -131,9 +130,9 @@ package body add is
         (((cabeza_act(y) > 30) and (cabeza_ant(y) > 30)) AND ((sw_act < 5 and sw_ant < 5))) OR
         (((cabeza_act(y) < -30) and (cabeza_ant(y) < -30)) AND ((sw_act > -5 and sw_ant > -5))))
 
-      THEN sint.escribirCabeza(true);
+      THEN sint.escribir_cabeza_sint(true);
 
-      ELSE sint.escribirCabeza(false);
+      ELSE sint.escribir_cabeza_sint(false);
 
       END IF;
 
@@ -201,12 +200,12 @@ package body add is
 
          if (current_g >= old_g + 20) or (current_g <= old_g-20) then
             if (current_speed > 40) then
-               sint.escribir_vol_sintoma(true);
+               sint.escribir_sint_vol(true);
             else 
-               sint.escribir_vol_sintoma(false);
+               sint.escribir_sint_vol(false);
             end if;
          else
-            sint.escribir_vol_sintoma(false);
+            sint.escribir_sint_vol(false);
          end if;
 
          old_g := current_g;
