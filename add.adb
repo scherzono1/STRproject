@@ -38,7 +38,11 @@ package body add is
     task Giros is
     pragma priority(3);
     end Giros;
-    
+
+    task Riesgos is 
+    pragma priority(3);
+    end Riesgos;
+
     ---------------------------------------------------------
     -- Aqui se declaran las tareas que forman el STR
     ---------------------------------------------------------
@@ -48,21 +52,26 @@ package body add is
     
     protected type Sintomas(valor_ini: integer) is 
     	pragma priority(4);
-    	procedure escribirCabeza(nuevo_valor_bool: boolean);
+    	procedure escribir_cabeza_sint(nuevo_valor_bool: boolean);
       procedure escribir_dist_sintoma(nuevo_valor: integer); 
-      procedure escribir_vol_sintoma(nuevo_valor: boolean);
+      procedure escribir_sint_vol(nuevo_valor: boolean);
+      function leer_cabeza_sin return boolean;
+      function leer_dist_sin return integer;
+      function leer_vol_sin return boolean;
     private 
-    	dato: integer := valor_ini;
-    	datoC: boolean := false;
-      vol_sintoma: boolean := false;
+    	sint_dist: integer := valor_ini;
+    	sint_cabeza: boolean := false;
+      sint_vol: boolean := false;
     end Sintomas;
    
     protected type Medidas is
     	pragma priority(13);
     	procedure escribir_dist_vel(dist: Distance_Samples_Type; vel: Speed_Samples_Type);
+      function leer_distancia return Distance_Samples_Type;
+      function leer_velocidad return Speed_Samples_Type;
     private
-    	velAct: Speed_Samples_Type;
-    	distAct: Distance_Samples_Type;
+    	velocidad: Speed_Samples_Type;
+    	distancia: Distance_Samples_Type;
     end Medidas;
 
     sint: Sintomas(0);
@@ -72,29 +81,48 @@ package body add is
     ---------------------------------------------------------------------- 
      
     protected body Sintomas is
-    	procedure escribirCabeza(nuevo_valor_bool: boolean) is 
+    	function leer_cabeza_sin return boolean is
+    	begin
+    		return sint_cabeza;
+    	end leer_cabeza_sin;
+    	function leer_dist_sin return integer is
+    	begin
+    		return sint_dist;
+    	end leer_dist_sin;
+      function leer_vol_sin return boolean is
+    	begin
+    		return sint_vol;
+    	end leer_vol_sin;
+    	procedure escribir_cabeza_sint(nuevo_valor_bool: boolean) is 
     	begin 
-    	datoC := nuevo_valor_bool;
-    	end escribirCabeza;
+    	sint_cabeza := nuevo_valor_bool;
+    	end escribir_cabeza_sint;
 
       procedure escribir_dist_sintoma(nuevo_valor: integer) is 
     	begin 
-    	dato := nuevo_valor;
+    	sint_dist := nuevo_valor;
     	end escribir_dist_sintoma;
 
-      procedure escribir_vol_sintoma(nuevo_valor: boolean) is
+      procedure escribir_sint_vol(nuevo_valor: boolean) is
       begin
-         vol_sintoma := nuevo_valor;
-      end escribir_vol_sintoma;
-
+         sint_vol := nuevo_valor;
+      end escribir_sint_vol;
     end Sintomas;
-    
+
 
     protected body Medidas is
+      function leer_distancia return Distance_Samples_Type is 
+    	begin 
+    	   return distancia;
+    	end leer_distancia;
+      function leer_velocidad return Speed_Samples_Type is 
+    	begin 
+    	   return velocidad;
+    	end leer_velocidad;
     	procedure escribir_dist_vel(dist: Distance_Samples_Type; vel: Speed_Samples_Type) is 
     	begin 
-         velAct := vel;
-         distAct := dist;
+         velocidad := vel;
+         distancia := dist;
     	end escribir_dist_vel;
     end Medidas;
 
@@ -131,9 +159,9 @@ package body add is
         (((cabeza_act(y) > 30) and (cabeza_ant(y) > 30)) AND ((sw_act < 5 and sw_ant < 5))) OR
         (((cabeza_act(y) < -30) and (cabeza_ant(y) < -30)) AND ((sw_act > -5 and sw_ant > -5))))
 
-      THEN sint.escribirCabeza(true);
+      THEN sint.escribir_cabeza_sint(true);
 
-      ELSE sint.escribirCabeza(false);
+      ELSE sint.escribir_cabeza_sint(false);
 
       END IF;
 
@@ -201,12 +229,12 @@ package body add is
 
          if (current_g >= old_g + 20) or (current_g <= old_g-20) then
             if (current_speed > 40) then
-               sint.escribir_vol_sintoma(true);
+               sint.escribir_sint_vol(true);
             else 
-               sint.escribir_vol_sintoma(false);
+               sint.escribir_sint_vol(false);
             end if;
          else
-            sint.escribir_vol_sintoma(false);
+            sint.escribir_sint_vol(false);
          end if;
 
          old_g := current_g;
@@ -215,6 +243,45 @@ package body add is
       end loop;
    end Giros;
 
+
+   
+   task body Riesgos is
+    sig_instante : Time;
+    intervalo : Time_Span := To_Time_Span(0.15);
+    begin
+    sig_instante := Big_Bang + intervalo;
+      loop
+         Starting_Notice("COMIENZA TAREA RIESGOS");         
+         if (sint.leer_vol_sin) then
+            Beep(1);
+         end if;
+
+         if(sint.leer_cabeza_sin) then
+            Beep(2);
+            if(Integer(medida.leer_velocidad) >= 70)then
+               Beep(3); 
+            end if;
+         end if;
+         
+         if(sint.leer_dist_sin = DISTANCIA_INSEGURA)
+            then Light(ON); 
+         end if;
+
+         if(sint.leer_dist_sin = DISTANCIA_IMPRUDENTE) then
+            Beep(4);
+            Light(ON);
+         end if;
+         
+         if(sint.leer_dist_sin = PELIGRO_COLISION) AND (sint.leer_cabeza_sin) then
+            Beep(5);
+            Activate_Brake;
+         end if;
+         
+         Finishing_Notice("FIN TAREA RIESGOS");
+         delay until sig_instante;
+         sig_Instante := sig_instante + intervalo;
+      end loop;
+    end Riesgos;
 
     ----------------------------------------------------------------------
     ------------- procedure para probar los dispositivos 
