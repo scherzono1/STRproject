@@ -43,6 +43,10 @@ package body add is
     pragma priority(3);
     end Riesgos;
 
+    task Display is
+    pragma priority(3);
+    end Display;
+
     ---------------------------------------------------------
     -- Aqui se declaran las tareas que forman el STR
     ---------------------------------------------------------
@@ -132,49 +136,47 @@ package body add is
 
    task body Cabeza is
     
-    t_sig : Time;
-    intervalo : Time_Span := To_Time_Span(0.4);
-    cabeza_act: HeadPosition_Samples_Type := (0,0);
-    cabeza_ant: HeadPosition_Samples_Type := (0,0);
-    sw_act: Steering_Samples_Type := (0);
-    sw_ant: Steering_Samples_Type := (0);
+      t_sig : Time;
+      intervalo : Time_Span := To_Time_Span(0.4);
+      cabeza_act: HeadPosition_Samples_Type := (0,0);
+      cabeza_ant: HeadPosition_Samples_Type := (0,0);
+      sw_act: Steering_Samples_Type := (0);
+      sw_ant: Steering_Samples_Type := (0);
     
-    t_start : Time;
-    t_end : Time;
+      t_start : Time;
+      t_end : Time;
     
-    begin
-    t_sig := Big_Bang + intervalo;
-    loop
-    Starting_Notice("COMENZANDO TAREA CABEZA");
+      begin
+      t_sig := Big_Bang + intervalo;
+      loop
+         Starting_Notice("COMENZANDO TAREA CABEZA");
     
-    t_start := Clock;
+         t_start := Clock;
     
-      Reading_HeadPosition (cabeza_act);
-      Display_HeadPosition_Sample (cabeza_act);
-      Reading_Steering (sw_act);
-      Display_Steering (sw_act);
+         Reading_HeadPosition (cabeza_act);
+         Display_HeadPosition_Sample (cabeza_act);
+         Reading_Steering (sw_act);
+         Display_Steering (sw_act);
 
-      IF(((cabeza_act(x) > 30) and (cabeza_ant(x) > 30)) OR
-        ((cabeza_act(x) < -30) and (cabeza_ant(x) < -30)) OR
-        (((cabeza_act(y) > 30) and (cabeza_ant(y) > 30)) AND ((sw_act < 5 and sw_ant < 5))) OR
-        (((cabeza_act(y) < -30) and (cabeza_ant(y) < -30)) AND ((sw_act > -5 and sw_ant > -5))))
+         if(((cabeza_act(x) > 30) and (cabeza_ant(x) > 30)) or
+            ((cabeza_act(x) < -30) and (cabeza_ant(x) < -30)) or
+            (((cabeza_act(y) > 30) and (cabeza_ant(y) > 30)) and ((sw_act < 5 and sw_ant < 5))) or
+            (((cabeza_act(y) < -30) and (cabeza_ant(y) < -30)) and ((sw_act > -5 and sw_ant > -5))))
 
-      THEN sint.escribir_cabeza_sint(true);
+         then sint.escribir_cabeza_sint(true);
+         else sint.escribir_cabeza_sint(false);
+         end if;
 
-      ELSE sint.escribir_cabeza_sint(false);
-
-      END IF;
-
-      cabeza_ant := cabeza_act;
-      sw_ant := sw_act;
+         cabeza_ant := cabeza_act;
+         sw_ant := sw_act;
       
-      t_end := Clock;
-      Put_Line("Tiempo total de la tarea Cabeza: "& Duration'Image(To_Duration(t_end - t_start)));
-      Finishing_Notice("FIN TAREA CABEZA");
-      delay until t_sig;
-      t_sig := t_sig + intervalo;
-    end loop;
-    end Cabeza;
+         t_end := Clock;
+         Put_Line("Tiempo total de la tarea Cabeza: "& Duration'Image(To_Duration(t_end - t_start)));
+         Finishing_Notice("FIN TAREA CABEZA");
+         delay until t_sig;
+         t_sig := t_sig + intervalo;
+      end loop;
+   end Cabeza;
 
 
    task body Distancia is 
@@ -187,42 +189,91 @@ package body add is
     
    begin
 
-    sig_instante := Big_Bang + intervalo;
+      sig_instante := Big_Bang + intervalo;
 
-    loop
-    	Starting_Notice("COMIENZA TAREA DISTANCIA");
-      Reading_Distance (dist_act);
-    	Reading_Speed (vel_act);
+      loop
+    	   Starting_Notice("COMIENZA TAREA DISTANCIA");
+         Reading_Distance (dist_act);
+    	   Reading_Speed (vel_act);
     	
-    	medida.escribir_dist_vel(dist_act, vel_act);
+    	   medida.escribir_dist_vel(dist_act, vel_act);
 
-      cal_vel := (vel_act/10)**2;
+         cal_vel := (vel_act/10)**2;
     	
-    	if (Float(dist_act) < Float(cal_vel) )then
-    		sint.escribir_dist_sintoma(DISTANCIA_INSEGURA);
-    	elsif (Float(dist_act) < Float(cal_vel/2) )then
-        	sint.escribir_dist_sintoma(DISTANCIA_IMPRUDENTE); 
-      elsif(Float(dist_act) < Float(cal_vel/3) )then
-        	sint.escribir_dist_sintoma(PELIGRO_COLISION);
-      else  sint.escribir_dist_sintoma(DISTANCIA_SEGURA);
-      end if;
+    	   if (Float(dist_act) < Float(cal_vel) )then
+    		   sint.escribir_dist_sintoma(DISTANCIA_INSEGURA);
+    	   elsif (Float(dist_act) < Float(cal_vel/2) )then
+        	   sint.escribir_dist_sintoma(DISTANCIA_IMPRUDENTE); 
+         elsif(Float(dist_act) < Float(cal_vel/3) )then
+        	   sint.escribir_dist_sintoma(PELIGRO_COLISION);
+         else  sint.escribir_dist_sintoma(DISTANCIA_SEGURA);
+         end if;
 
-      Finishing_Notice("FIN TAREA DISTANCIA");
-      delay until sig_instante;
-      sig_instante := sig_instante + intervalo;
-      
-    end loop;
+         Finishing_Notice("FIN TAREA DISTANCIA");
+         delay until sig_instante;
+         sig_instante := sig_instante + intervalo;
+      end loop;
 
    end Distancia;
 
-   task body Giros is
-    current_g: Steering_Samples_Type := 0;
-    old_g: Steering_Samples_Type := 0;
-    current_speed: Speed_Samples_Type := 0;
-    sig_instante : Time;
-    intervalo : Time_Span := To_Time_Span(0.35);
+   task body Display is
+      dist_act: Distance_Samples_Type := 0;
+      vel_act: Speed_Samples_Type := 0;
+      cabeza_act: HeadPosition_Samples_Type := (0,0);
+      vol_act: Steering_Samples_Type := 0;
+
+      dis_sin_act: integer := 0;
+
+      sig_instante: Time;
+      intervalo: Time_Span := To_Time_Span(1.0);
+
    begin
-   sig_instante := Big_Bang + intervalo;
+      sig_instante := Big_Bang + intervalo;
+
+      loop
+         Starting_Notice("COMIENZA TAREA DISPLAY");
+
+         dist_act := medida.leer_distancia;
+         vel_act := medida.leer_velocidad;
+         Display_Distance(dist_act);
+         Display_Speed(vel_act);
+
+         dis_sin_act := sint.leer_dist_sin;
+         if (dis_sin_act /= DISTANCIA_SEGURA) then
+            if (dis_sin_act = DISTANCIA_IMPRUDENTE) then
+               Put_Line("DISTANCIA_IMPRUDENTE");
+            elsif (dis_sin_act = DISTANCIA_INSEGURA) then
+               Put_Line("DISTANCIA_INSEGURA");
+            else Put_Line("PELIGRO_COLISION");
+            end if;
+         end if;
+
+         if (sint.leer_cabeza_sin = true) then 
+            Reading_HeadPosition(cabeza_act);
+            Display_HeadPosition_Sample(cabeza_act);
+         end if;
+
+         if (sint.leer_vol_sin = true) then
+            Reading_Steering(vol_act);
+            Display_Steering(vol_act);
+         end if;
+
+         Finishing_Notice("FIN TAREA DISPLAY");
+         delay until sig_instante;
+         sig_instante := sig_instante + intervalo;
+      end loop;
+
+   end Display;
+
+
+   task body Giros is
+      current_g: Steering_Samples_Type := 0;
+      old_g: Steering_Samples_Type := 0;
+      current_speed: Speed_Samples_Type := 0;
+      sig_instante : Time;
+      intervalo : Time_Span := To_Time_Span(0.35);
+   begin
+      sig_instante := Big_Bang + intervalo;
       loop
          Reading_Steering(current_g);
          Reading_Speed(current_speed);
@@ -246,10 +297,10 @@ package body add is
 
    
    task body Riesgos is
-    sig_instante : Time;
-    intervalo : Time_Span := To_Time_Span(0.15);
-    begin
-    sig_instante := Big_Bang + intervalo;
+      sig_instante : Time;
+      intervalo : Time_Span := To_Time_Span(0.15);
+      begin
+      sig_instante := Big_Bang + intervalo;
       loop
          Starting_Notice("COMIENZA TAREA RIESGOS");         
          if (sint.leer_vol_sin) then
