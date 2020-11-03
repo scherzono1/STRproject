@@ -237,6 +237,7 @@ package body add is
          vel_act := medida.leer_velocidad;
          Display_Distance(dist_act);
          Display_Speed(vel_act);
+         New_Line;
 
          dis_sin_act := sint.leer_dist_sin;
          if (dis_sin_act /= DISTANCIA_SEGURA) then
@@ -249,13 +250,11 @@ package body add is
          end if;
 
          if (sint.leer_cabeza_sin = true) then 
-            Reading_HeadPosition(cabeza_act);
-            Display_HeadPosition_Sample(cabeza_act);
+            Put_Line("SINTOMA CABEZA DETECTADO");
          end if;
 
          if (sint.leer_vol_sin = true) then
-            Reading_Steering(vol_act);
-            Display_Steering(vol_act);
+            Put_Line("SINTOMA VOLANTAZO DETECTADO");
          end if;
 
          Finishing_Notice("FIN TAREA DISPLAY");
