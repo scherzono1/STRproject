@@ -16,6 +16,10 @@ package body add is
     DISTANCIA_INSEGURA: constant Integer := 1;
     DISTANCIA_IMPRUDENTE: constant Integer := 2;
     PELIGRO_COLISION: constant Integer := 3;
+    M1: constant Integer := 1;
+    M2: constant Integer := 2;
+    M3: constant Integer := 3;
+
     ----------------------------------------------------------------------
     ------------- procedure exported 
     ----------------------------------------------------------------------
@@ -78,8 +82,18 @@ package body add is
     	distancia: Distance_Samples_Type;
     end Medidas;
 
+    protected type InterruptHandler(valor_ini: integer) is
+      pragma priority(15);
+      procedure siguiente_modo;
+      function leer_modo return integer;
+    private
+      modo: Integer := valor_ini;
+    end InterruptHandler;
+
     sint: Sintomas(0);
     medida: Medidas;
+    interrupt_handler: InterruptHandler(1);
+
     ----------------------------------------------------------------------
     ------------- cuerpo de objeto protegido 
     ---------------------------------------------------------------------- 
@@ -130,6 +144,22 @@ package body add is
     	end escribir_dist_vel;
     end Medidas;
 
+    protected body InterruptHandler is
+      function leer_modo return Integer is
+      begin
+         return modo;
+      end leer_modo;
+      procedure siguiente_modo is
+      begin
+         if modo = M1 then
+            modo := M2;
+         elsif modo = M2 and sint.leer_dist_sin /= PELIGRO_COLISION and sint.leer_cabeza_sin = false then
+            modo := M3;
+         elsif modo = M3 then
+            modo := M1;
+         end if;
+      end siguiente_modo;
+    end InterruptHandler;
     -----------------------------------------------------------------------
     ------------- body of tasks 
     -----------------------------------------------------------------------
@@ -298,33 +328,38 @@ package body add is
    task body Riesgos is
       sig_instante : Time;
       intervalo : Time_Span := To_Time_Span(0.15);
+      modo : Integer;
       begin
       sig_instante := Big_Bang + intervalo;
       loop
-         Starting_Notice("COMIENZA TAREA RIESGOS");         
-         if (sint.leer_vol_sin) then
-            Beep(1);
-         end if;
-
-         if(sint.leer_cabeza_sin) then
-            Beep(2);
-            if(Integer(medida.leer_velocidad) >= 70)then
-               Beep(3); 
+         Starting_Notice("COMIENZA TAREA RIESGOS");     
+         modo := interrupt_handler.leer_modo;
+         if (modo /= M3) then
+            if (sint.leer_vol_sin) then
+               Beep(1);
             end if;
-         end if;
-         
-         if(sint.leer_dist_sin = DISTANCIA_INSEGURA)
-            then Light(ON); 
-         end if;
 
-         if(sint.leer_dist_sin = DISTANCIA_IMPRUDENTE) then
-            Beep(4);
-            Light(ON);
-         end if;
-         
-         if(sint.leer_dist_sin = PELIGRO_COLISION) AND (sint.leer_cabeza_sin) then
-            Beep(5);
-            Activate_Brake;
+            if(sint.leer_cabeza_sin) then
+               Beep(2);
+               if(Integer(medida.leer_velocidad) >= 70)then
+                  Beep(3); 
+               end if;
+            end if;
+            
+            if(sint.leer_dist_sin = DISTANCIA_INSEGURA) AND (modo /= M2)
+               then Light(ON); 
+            end if;
+
+            if(sint.leer_dist_sin = DISTANCIA_IMPRUDENTE) AND (modo /= M2)
+            then
+               Beep(4);
+               Light(ON);
+            end if;
+            
+            if(sint.leer_dist_sin = PELIGRO_COLISION) AND (sint.leer_cabeza_sin) then
+               Beep(5);
+               Activate_Brake;
+            end if;
          end if;
          
          Finishing_Notice("FIN TAREA RIESGOS");
