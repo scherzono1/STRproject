@@ -222,7 +222,6 @@ package body add is
       cabeza_act: HeadPosition_Samples_Type := (0,0);
       vol_act: Steering_Samples_Type := 0;
 
-      --not sure
       dis_sin_act: integer := 0;
 
       sig_instante: Time;
@@ -239,7 +238,6 @@ package body add is
          Display_Distance(dist_act);
          Display_Speed(vel_act);
 
-         --not sure
          dis_sin_act := sint.leer_dist_sin;
          if (dis_sin_act /= DISTANCIA_SEGURA) then
             if (dis_sin_act = DISTANCIA_IMPRUDENTE) then
@@ -249,7 +247,6 @@ package body add is
             else Put_Line("PELIGRO_COLISION");
             end if;
          end if;
-         --end not sure
 
          if (sint.leer_cabeza_sin = true) then 
             Reading_HeadPosition(cabeza_act);
