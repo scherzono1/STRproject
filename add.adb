@@ -26,29 +26,35 @@ package body add is
     procedure Background is
     begin
       loop
+         --Put_Line("BACKGROUND");
         null;
       end loop;
     end Background;
     ----------------------------------------------------------------------
 
-    task Cabeza is 
-    pragma priority(4);
-    end Cabeza;
-
+    -- 0.15
+    task Riesgos is 
+    pragma priority(5);
+    end Riesgos;
+    
+    -- 0.3
     task Distancia is
-    pragma priority(2);
+    pragma priority(4);
     end Distancia;
-
+    
+    -- 0.35
     task Giros is
     pragma priority(3);
     end Giros;
+   
+    -- 0.4
+    task Cabeza is 
+    pragma priority(2);
+    end Cabeza;
 
-    task Riesgos is 
-    pragma priority(3);
-    end Riesgos;
-
+   -- 1
     task Display is
-    pragma priority(3);
+    pragma priority(1);
     end Display;
 
     ---------------------------------------------------------
@@ -196,12 +202,9 @@ package body add is
          then sint.escribir_cabeza_sint(true);
          else sint.escribir_cabeza_sint(false);
          end if;
-
          cabeza_ant := cabeza_act;
          sw_ant := sw_act;
-      
          t_end := Clock;
-         Put_Line("Tiempo total de la tarea Cabeza: "& Duration'Image(To_Duration(t_end - t_start)));
          Finishing_Notice("FIN TAREA CABEZA");
          delay until t_sig;
          t_sig := t_sig + intervalo;
@@ -251,9 +254,7 @@ package body add is
       vel_act: Speed_Samples_Type := 0;
       cabeza_act: HeadPosition_Samples_Type := (0,0);
       vol_act: Steering_Samples_Type := 0;
-
       dis_sin_act: integer := 0;
-
       sig_instante: Time;
       intervalo: Time_Span := To_Time_Span(1.0);
 
@@ -304,6 +305,8 @@ package body add is
    begin
       sig_instante := Big_Bang + intervalo;
       loop
+         Starting_Notice("COMIENZA TAREA GIROS");     
+
          Reading_Steering(current_g);
          Reading_Speed(current_speed);
 
@@ -318,45 +321,50 @@ package body add is
          end if;
 
          old_g := current_g;
+         Finishing_Notice("FIN TAREA GIROS");
          delay until sig_instante;
          sig_instante := sig_instante + intervalo;
       end loop;
    end Giros;
 
-
-   
    task body Riesgos is
       sig_instante : Time;
       intervalo : Time_Span := To_Time_Span(0.15);
       modo : Integer;
+      vol_sin: boolean;
+      cab_sin: boolean;
+      dis_sin: Integer;
       begin
       sig_instante := Big_Bang + intervalo;
       loop
          Starting_Notice("COMIENZA TAREA RIESGOS");     
          modo := interrupt_handler.leer_modo;
+         vol_sin := sint.leer_vol_sin;
+         cab_sin := sint.leer_cabeza_sin;
+         dis_sin := sint.leer_dist_sin;
          if (modo /= M3) then
-            if (sint.leer_vol_sin) then
+            if (vol_sin) then
                Beep(1);
             end if;
 
-            if(sint.leer_cabeza_sin) then
+            if(cab_sin) then
                Beep(2);
                if(Integer(medida.leer_velocidad) >= 70)then
                   Beep(3); 
                end if;
             end if;
             
-            if(sint.leer_dist_sin = DISTANCIA_INSEGURA) AND (modo /= M2)
+            if(dis_sin = DISTANCIA_INSEGURA) AND (modo /= M2)
                then Light(ON); 
             end if;
 
-            if(sint.leer_dist_sin = DISTANCIA_IMPRUDENTE) AND (modo /= M2)
+            if(dis_sin = DISTANCIA_IMPRUDENTE) AND (modo /= M2)
             then
                Beep(4);
                Light(ON);
             end if;
             
-            if(sint.leer_dist_sin = PELIGRO_COLISION) AND (sint.leer_cabeza_sin) then
+            if(dis_sin = PELIGRO_COLISION) AND (cab_sin) then
                Beep(5);
                Activate_Brake;
             end if;
@@ -368,64 +376,7 @@ package body add is
       end loop;
     end Riesgos;
 
-    ----------------------------------------------------------------------
-    ------------- procedure para probar los dispositivos 
-    ----------------------------------------------------------------------
-    procedure Prueba_Dispositivos; 
-
-    Procedure Prueba_Dispositivos is
-        Current_V: Speed_Samples_Type := 0;
-        Current_H: HeadPosition_Samples_Type := (+2,-2);
-        Current_D: Distance_Samples_Type := 0;
-        Current_O: Eyes_Samples_Type := (70,70);
-        Current_E: EEG_Samples_Type := (1,1,1,1,1,1,1,1,1,1);
-        Current_S: Steering_Samples_Type := 0;
-    begin
-         Starting_Notice ("Prueba_Dispositivo");
-
-         for I in 1..120 loop
-         -- Prueba distancia
-            --Reading_Distance (Current_D);
-            --Display_Distance (Current_D);
-            --if (Current_D < 40) then Light (On); 
-            --                    else Light (Off); end if;
-
-         -- Prueba velocidad
-            --Reading_Speed (Current_V);
-            --Display_Speed (Current_V);
-            --if (Current_V > 110) then Beep (2); end if;
-
-         -- Prueba volante
-         --   Reading_Steering (Current_S);
-         --   Display_Steering (Current_S);
-         --   if (Current_S > 30) OR (Current_S < -30) then Light (On);
-         --                                            else Light (Off); end if;
-
-         -- Prueba Posicion de la cabeza
-            --Reading_HeadPosition (Current_H);
-            --Display_HeadPosition_Sample (Current_H);
-            --if (Current_H(x) > 30) then Beep (4); end if;
-
-         -- Prueba ojos
-            --Reading_EyesImage (Current_O);
-            --Display_Eyes_Sample (Current_O);
-
-         -- Prueba electroencefalograma
-            --Reading_Sensors (Current_E);
-            --Display_Electrodes_Sample (Current_E);
-   
-         delay until (Clock + To_time_Span(0.1));
-         end loop;
-
-         Finishing_Notice ("Prueba_Dispositivo");
-    end Prueba_Dispositivos;
-
-
 begin
    Starting_Notice ("Programa Principal");
-   Prueba_Dispositivos;
    Finishing_Notice ("Programa Principal");
 end add;
-
-
-
