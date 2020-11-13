@@ -31,7 +31,7 @@ package body add is
       end loop;
     end Background;
     ----------------------------------------------------------------------
-
+   
     -- 0.15
     task Riesgos is 
     pragma priority(5);
@@ -65,7 +65,7 @@ package body add is
     ----------------------------------------------------------------------
     
     protected type Sintomas(valor_ini: integer) is 
-    	pragma priority(4);
+    	pragma priority(10);
     	procedure escribir_cabeza_sint(nuevo_valor_bool: boolean);
       procedure escribir_dist_sintoma(nuevo_valor: integer); 
       procedure escribir_sint_vol(nuevo_valor: boolean);
@@ -79,7 +79,7 @@ package body add is
     end Sintomas;
    
     protected type Medidas is
-    	pragma priority(13);
+    	pragma priority(11);
     	procedure escribir_dist_vel(dist: Distance_Samples_Type; vel: Speed_Samples_Type);
       function leer_distancia return Distance_Samples_Type;
       function leer_velocidad return Speed_Samples_Type;
@@ -89,7 +89,7 @@ package body add is
     end Medidas;
 
     protected type InterruptHandler(valor_ini: integer) is
-      pragma priority(15);
+      pragma priority(12);
       procedure siguiente_modo;
       function leer_modo return integer;
     private
@@ -171,24 +171,16 @@ package body add is
     -----------------------------------------------------------------------
 
    task body Cabeza is
-    
       t_sig : Time;
       intervalo : Time_Span := To_Time_Span(0.4);
       cabeza_act: HeadPosition_Samples_Type := (0,0);
       cabeza_ant: HeadPosition_Samples_Type := (0,0);
       sw_act: Steering_Samples_Type := (0);
       sw_ant: Steering_Samples_Type := (0);
-    
-      t_start : Time;
-      t_end : Time;
-    
       begin
       t_sig := Big_Bang + intervalo;
       loop
          Starting_Notice("COMENZANDO TAREA CABEZA");
-    
-         t_start := Clock;
-    
          Reading_HeadPosition (cabeza_act);
          Display_HeadPosition_Sample (cabeza_act);
          Reading_Steering (sw_act);
@@ -198,13 +190,13 @@ package body add is
             ((cabeza_act(x) < -30) and (cabeza_ant(x) < -30)) or
             (((cabeza_act(y) > 30) and (cabeza_ant(y) > 30)) and ((sw_act < 5 and sw_ant < 5))) or
             (((cabeza_act(y) < -30) and (cabeza_ant(y) < -30)) and ((sw_act > -5 and sw_ant > -5))))
-
-         then sint.escribir_cabeza_sint(true);
-         else sint.escribir_cabeza_sint(false);
+         then 
+            sint.escribir_cabeza_sint(true);
+         else 
+            sint.escribir_cabeza_sint(false);
          end if;
          cabeza_ant := cabeza_act;
          sw_ant := sw_act;
-         t_end := Clock;
          Finishing_Notice("FIN TAREA CABEZA");
          delay until t_sig;
          t_sig := t_sig + intervalo;
