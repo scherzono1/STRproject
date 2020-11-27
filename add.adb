@@ -177,9 +177,18 @@ package body add is
       cabeza_ant: HeadPosition_Samples_Type := (0,0);
       sw_act: Steering_Samples_Type := (0);
       sw_ant: Steering_Samples_Type := (0);
+      t_inicio: Time;
+      t_fin: Time;
+      EX_TIME: constant Ada.Real_Time.Time_Span := Ada.Real_Time.Milliseconds(1000);
       begin
       t_sig := Big_Bang + intervalo;
       loop
+
+      	t_inicio := Clock;
+         Execution_Time(EX_TIME);
+         t_fin := Clock;   
+         Put_Line("Tiempo de Computo de la tarea Cabeza: "& Duration'Image(To_Duration(t_fin - t_inicio)));
+
          Starting_Notice("COMENZANDO TAREA CABEZA");
          Reading_HeadPosition (cabeza_act);
          Display_HeadPosition_Sample (cabeza_act);
